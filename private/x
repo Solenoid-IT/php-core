@@ -1,0 +1,2343 @@
+<?php
+
+
+
+$http_user = 'www-data';
+$cli_user  = get_current_user();
+
+
+
+error_reporting( E_ERROR );
+
+
+
+// (Setting the values)
+$helper =
+    <<<EOD
+
+
+    AVAILABLE COMMANDS
+
+
+    x init
+
+    x install
+
+    x lib <vendor> <product> create
+
+    x store <id> create
+    x service <id> create
+
+    x middleware <id> create
+
+    x model <id> create
+    x view <id> create
+    x controller <id> create
+
+    x explore <folder-path> <line-content> ?<file-name>
+
+    x git config <local-repository-folder-path>
+    x git clone <remote-repository-url> <local-repository-folder-path>
+    x git download <remote-repository-url> <local-repository-folder-path>
+    x git info <local-repository-folder-path>
+    x git log <local-repository-folder-path>
+    x git select <local-repository-folder-path> <branch-name>
+    x git tag <local-repository-folder-path> <tag-value> ?<remote>
+    x git untag <local-repository-folder-path> <tag-value> ?<remote>
+    x git pull <local-repository-folder-path> <branch-name>
+    x git push <local-repository-folder-path> <branch-name> <commit-description> ?<tag-value>
+    x git reset <local-repository-folder-path> <branch-name>
+    x git flat <local-repository-folder-path> <branch-name> <commit-description>
+    x git status <local-repository-folder-path>
+    x git undo <local-repository-folder-path> <type=local|synced>
+
+    x perms reset
+    x perms allow-http <folder-path>
+
+    x sys-service config <name>
+    x sys-service create <name> <description> <executable-path>
+    x sys-service delete <name>
+    x sys-service rename <old-name> <new-name>
+    x sys-service list
+
+    x apache create <domain>
+    x apache delete <domain>
+    x apache config <domain>
+    x apache publish <domain>
+    x apache revoke <domain>
+    x apache list ?<state>
+
+    x cert create ?<domain> ?<email>
+    x cert delete <domain>
+    x cert revoke <domain>
+    x cert renew
+    x cert list
+
+    x svelte install
+    x svelte build
+    x svelte dev
+
+    x task list
+    x task <task-id> info
+    x task <task-id> enable
+    x task <task-id> disable
+    x task <task-id> create
+    x task <task-id> add <script-id>
+    x task <task-id> run <script-id>
+
+    x cron config
+    x cron add task <task-id> <script-id> ?<script-args>
+
+
+
+    EOD
+;
+$script_file_contents =
+[
+    'model' =>
+        <<<END
+        <?php
+
+
+
+        namespace App\Model{! path !};
+
+
+
+        use \Solenoid\Core\MVC\Model;
+
+
+
+        class {! name !} extends Model
+        {
+            # Returns [assoc|false] | Throws [Exception]
+            public static function find (string \$user_id)
+            {
+                
+            }
+        }
+
+
+
+        ?>
+        END
+    ,
+
+    'view' =>
+        <<<END
+        @extends('layouts/empty.blade.php')
+
+        @section('view.content')
+
+            <style>
+
+                body
+                {
+                    background-color: green;
+                }
+
+            </style>
+
+            
+
+        @endsection
+
+
+
+        @section('view.script')
+
+            <script>
+
+                alert( 'Hello World !' );
+
+            </script>
+
+        @endsection
+        END
+    ,
+
+    'controller' =>
+        <<<END
+        <?php
+
+
+
+        namespace App\Controller{! path !};
+
+
+
+        use \Solenoid\Core\MVC\Controller;
+
+        use \Solenoid\RPC\Server;
+        use \Solenoid\RPC\Request;
+        use \Solenoid\RPC\Response;
+
+
+
+
+
+
+        class {! name !} extends Controller
+        {
+            # Returns [void]
+            public function get ()
+            {
+                // (Printing the value)
+                echo parent::\$core::\$view::build
+                (
+                    'root/homepage/view.blade.php',
+
+                    [
+                        'message' => 'This page is empty'
+                    ],
+
+                    [
+                        
+                    ]
+                )
+                ;
+            }
+
+            # Returns [void]
+            public function rpc ()
+            {
+                // (Reading the request)
+                \$request = Request::read();
+
+                if ( \$request::\$valid )
+                {// (Request is valid
+                    switch ( \$request::\$subject )
+                    {
+                        case 's':
+                            switch ( \$request::\$verb )
+                            {
+                                case 'v':
+                                    // Returning the value
+                                    return
+                                        Server::send( Response::create( 200, [], [ 'message' => 'Hello World !' ] ) )
+                                    ;
+                                break;
+                            }
+                        break;
+                    }
+                }
+            }
+        }
+
+
+
+        ?>
+        END
+    ,
+
+
+
+    'service' =>
+        <<<END
+        <?php
+
+
+
+        namespace App\Service{! path !};
+
+
+
+        use \Solenoid\Core\Service;
+
+
+
+        class {! name !} extends Service
+        {
+            # Returns [bool] | Throws [Exception]
+            public static function change_value (string \$user_id, string \$value)
+            {
+                
+            }
+        }
+
+
+
+        ?>
+        END
+    ,
+
+    'store' =>
+        <<<END
+        <?php
+
+
+
+        namespace App\Store{! path !};
+
+
+
+        use \Solenoid\Core\Store;
+
+
+
+        class {! name !} extends Store
+        {
+            public static \$data;
+
+
+
+            # Returns [mixed]
+            public static function init ()
+            {
+                if ( isset( self::\$data ) ) return self::\$data;
+
+
+
+                // (Getting the value)
+                self::\$data =
+                [
+                    'datetime' => date( 'c' )
+                ]
+                ;
+
+
+
+                // Returning the value
+                return self::\$data;
+            }
+        }
+
+
+
+        ?>
+        END
+    ,
+
+
+
+    'middleware' =>
+        <<<END
+        <?php
+
+
+
+        namespace App\Middleware{! path !};
+
+
+
+        use \Solenoid\Core\Middleware;
+
+
+
+        class {! name !} extends Middleware
+        {
+            # Returns [bool|null] | Throws [Exception]
+            public static function run ()
+            {
+                
+            }
+        }
+
+
+
+        ?>
+        END
+    ,
+]
+;
+
+
+
+if ( count( $argv ) === 1 )
+{// Match failed
+    // Printing the valie
+    echo $helper;
+
+    // Closing the process
+    exit;
+}
+
+
+
+switch ( $argv[1] )
+{
+    case 'init':
+        // (Executing the commands)
+        echo shell_exec('apt update -y');
+        echo shell_exec('apt install -y curl php-cli php-curl apache2');
+
+        echo shell_exec('cd ~');
+        echo shell_exec('curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php');
+        echo shell_exec('php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer');
+
+        echo shell_exec('apt install -y git');
+
+        echo shell_exec('apt install -y certbot python3-certbot-apache');
+
+        echo shell_exec('apt install -y nodejs');
+        echo shell_exec('apt install -y npm');
+
+
+
+        // (Setting the directory)
+        chdir( __DIR__ );
+
+        // (Executing the command)
+        echo shell_exec('php x install');
+
+
+
+        // (Getting the values)
+        $tpl_folder_path_rel = '../web/assets/tpl/sb-admin';
+        $tpl_folder_path     = __DIR__ . '/' . $tpl_folder_path_rel;
+
+        if ( !is_dir( "$tpl_folder_path/src" ) )
+        {// (Directory not found)
+            // (Executing the command)
+            echo shell_exec("php x git clone 'https://github.com/StartBootstrap/startbootstrap-sb-admin.git' $tpl_folder_path_rel");
+        }
+    break;
+
+    case 'install':
+        // (Setting the cwd)
+        chdir( __DIR__ . '/..' );
+
+
+
+        // (Executing the commands)
+        echo shell_exec('composer update');
+        echo shell_exec('composer install');
+        echo shell_exec('composer dump-autoload');
+    break;
+
+
+
+    case 'lib':
+        if ( isset( $argv[2] ) && isset( $argv[3] ) )
+        {// (Values found)
+            // (Getting the values)
+            $vendor      = $argv[2];
+            $product     = $argv[3];
+
+            $folder_path = __DIR__ . "/lib/spm/$vendor/$product";
+
+            if ( is_dir( $folder_path ) )
+            {// (Directory found)
+                // Printing the value
+                echo "\n\nCannot create the library :: Library $vendor/$product already exists !\n\n\n";
+            }
+            else
+            {// (Directory not found)
+                // (Making the directories)
+                mkdir( $folder_path, 0777, true );
+                mkdir( "$folder_path/src" );
+
+
+
+                // (Setting the value)
+                $sample_file_path = "$folder_path/src/Sample.php";
+                $sample_content   =
+                    <<<EOD
+                    <?php
+
+
+
+                    namespace $vendor\\$product;
+                    
+                    
+                    
+                    class Sample
+                    {
+                        # Returns [string]
+                        public static function build (string \$key, array \$value = [])
+                        {
+                            // Returning the value
+                            return \$key . ' -> ' . json_encode( \$value );
+                        }
+                    }
+                    
+                    
+                    
+                    ?>
+                    EOD
+                ;
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $sample_file_path, $sample_content );
+
+
+
+                // Printing the value
+                echo "\n\nFile `$sample_file_path` has been created !\n\n\n";
+            }
+        }
+        else
+        {// (Values not found)
+            // Printing the value
+            echo $helper;
+        }
+    break;
+
+    case 'model':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/models/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['model'];
+
+
+
+                // (Getting the value)
+                $kv_data =
+                [
+                    'path' => ( strpos( $rel_path, '/' ) === false ? '' : '\\' . str_replace( '/', '\\', dirname( $rel_path ) ) ) ,
+                    'name' => pathinfo( $file_path, PATHINFO_FILENAME )
+                ]
+                ;
+
+                foreach ( $kv_data as $k => $v )
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = str_replace( "{! $k !}", $v, $file_content );
+                }
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+    case 'view':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/views/root/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['view'];
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+    case 'controller':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/controllers/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['controller'];
+
+
+
+                // (Getting the value)
+                $kv_data =
+                [
+                    'path' => ( strpos( $rel_path, '/' ) === false ? '' : '\\' . str_replace( '/', '\\', dirname( $rel_path ) ) ) ,
+                    'name' => pathinfo( $file_path, PATHINFO_FILENAME )
+                ]
+                ;
+
+                foreach ( $kv_data as $k => $v )
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = str_replace( "{! $k !}", $v, $file_content );
+                }
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'service':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/services/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['service'];
+
+
+
+                // (Getting the value)
+                $kv_data =
+                [
+                    'path' => ( strpos( $rel_path, '/' ) === false ? '' : '\\' . str_replace( '/', '\\', dirname( $rel_path ) ) ) ,
+                    'name' => pathinfo( $file_path, PATHINFO_FILENAME )
+                ]
+                ;
+
+                foreach ( $kv_data as $k => $v )
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = str_replace( "{! $k !}", $v, $file_content );
+                }
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+    case 'store':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/stores/src/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['store'];
+
+
+
+                // (Getting the value)
+                $kv_data =
+                [
+                    'path' => ( strpos( $rel_path, '/' ) === false ? '' : '\\' . str_replace( '/', '\\', dirname( $rel_path ) ) ) ,
+                    'name' => pathinfo( $file_path, PATHINFO_FILENAME )
+                ]
+                ;
+
+                foreach ( $kv_data as $k => $v )
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = str_replace( "{! $k !}", $v, $file_content );
+                }
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'middleware':
+        // (Getting the values)
+        $rel_path = $argv[2];
+        $action   = $argv[3];
+
+        switch ( $action )
+        {
+            case 'create':
+                // (Getting the values)
+                $file_path   = __DIR__ . "/middlewares/src/$rel_path";
+                $folder_path = dirname( $file_path );
+
+                if ( file_exists( $file_path ) )
+                {// (File exists)
+                    // Printing the value
+                    die( "\n\nFile `$file_path` already exists !\n\n\n" );
+                }
+
+                if ( !is_dir( $folder_path ) )
+                {// (Directory not found)
+                    // (Making the directory)
+                    mkdir( $folder_path, 0777, true );
+                }
+
+
+
+                // (Getting the value)
+                $file_content = $script_file_contents['middleware'];
+
+
+
+                // (Getting the value)
+                $kv_data =
+                [
+                    'path' => ( strpos( $rel_path, '/' ) === false ? '' : '\\' . str_replace( '/', '\\', dirname( $rel_path ) ) ) ,
+                    'name' => pathinfo( $file_path, PATHINFO_FILENAME )
+                ]
+                ;
+
+                foreach ( $kv_data as $k => $v )
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = str_replace( "{! $k !}", $v, $file_content );
+                }
+
+
+
+                // (Writing the content to the file)
+                file_put_contents( $file_path, $file_content );
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'explore':
+        if ( isset( $argv[2] ) && isset( $argv[3] ) )
+        {// Values found
+            // (Including the file)
+            include_once( __DIR__ . '/autoload.php' );
+
+
+
+            // (Getting the values)
+            $folder_path  = $argv[2];
+
+            $line_content = $argv[3];
+            $file_name    = isset( $argv[4] ) ? $argv[4] : '/\.php$/';
+
+
+
+            \Solenoid\Text\Explorer::create( $folder_path )->walk
+            (
+                function ($result)
+                {
+                    // Printing the value
+                    echo "$result\n";
+                },
+
+                \Solenoid\Text\Regex::create( $line_content ),
+                $file_name ? \Solenoid\Text\Regex::create( $file_name ) : null
+            )
+            ;
+        }
+        else
+        {// Values not found
+            // Printing the value
+            echo $helper;
+        }
+    break;
+
+
+
+    case 'git':
+        switch ( $argv[2] )
+        {
+            case 'config':
+                if ( isset( $argv[3] ) )
+                {// Values found
+                    // (Getting the values)
+                    $config_file_path_esa = escapeshellarg( $argv[3] . '/.git/config' );
+
+
+
+                    // (Executing the command)
+                    system("nano $config_file_path_esa >> `tty`");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'clone':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $remote_repository_url            = $argv[3];
+                    $local_repository_folder_path     = $argv[4];
+
+                    $remote_repository_url_esa        = escapeshellarg( $remote_repository_url );
+                    $local_repository_folder_path_esa = escapeshellarg( $local_repository_folder_path );
+
+
+
+                    // (Executing the command)
+                    echo shell_exec("git clone $remote_repository_url_esa $local_repository_folder_path_esa");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'download':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $remote_repository_url            = $argv[3];
+                    $local_repository_folder_path     = $argv[4];
+
+                    $git_folder_path                  = "$local_repository_folder_path/.git";
+
+                    $remote_repository_url_esa        = escapeshellarg( $remote_repository_url );
+                    $local_repository_folder_path_esa = escapeshellarg( $local_repository_folder_path );
+                    $git_folder_path_esa              = escapeshellarg( $git_folder_path );
+
+
+
+                    // (Executing the commands)
+                    echo shell_exec("php task git run clone $remote_repository_url_esa $local_repository_folder_path_esa");
+                    echo shell_exec("rm -rf $git_folder_path_esa");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'info':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $local_repository_folder_path = $argv[3];
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the command)
+                    $output = shell_exec("git config --list");
+
+                    // Printing the value
+                    echo $output;
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'log':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $local_repository_folder_path = $argv[3];
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // Printing the value
+                    echo shell_exec('git log');
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'select':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $branch                       = escapeshellarg( $argv[4] );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the commands)
+                    echo shell_exec("git checkout $branch");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'tag':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $tag_value                    = escapeshellarg( $argv[4] );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the commands)
+                    echo shell_exec("git tag $tag_value");
+
+
+
+                    if ( isset( $argv[5] ) )
+                    {// Value found
+                        // (Executing the command)
+                        echo shell_exec("git push origin $tag_value");
+                    }
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'untag':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $tag_value                    = escapeshellarg( $argv[4] );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the commands)
+                    echo shell_exec("git tag -d $tag_value");
+
+
+
+                    if ( isset( $argv[5] ) )
+                    {// Value found
+                        // (Executing the command)
+                        echo shell_exec("git push --delete origin $tag_value");
+                    }
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'pull':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $branch_name                  = $argv[4];
+
+                    $branch_name_esa              = escapeshellarg( $branch_name );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the commands)
+                    shell_exec("git checkout $branch_name_esa");
+                    shell_exec("git pull origin $branch_name_esa");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'push':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) && isset( $argv[5] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $branch_name                  = $argv[4];
+                    $commit_description           = $argv[5];
+
+                    $tag_value_esa                = escapeshellarg( isset( $argv[6] ) ? $argv[6] : $branch_name );
+                    $branch_name_esa              = escapeshellarg( $branch_name );
+                    $commit_description_esa       = escapeshellarg( $commit_description );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // Printing the value
+                    echo "\n\n";
+
+
+
+                    // (Executing the commands)
+                    echo "-- BRANCH --------------\n\n" . shell_exec("git checkout $branch_name_esa") . "\n\n\n";
+
+                    echo "-- ADD -----------------\n\n" . shell_exec('git add .') . "\n\n\n";
+                    echo "-- COMMIT --------------\n\n" . shell_exec("git commit -m $commit_description_esa") . "\n\n\n";
+                    echo "-- PUSH ----------------\n\n" . shell_exec("git push origin $tag_value_esa");
+                    
+
+
+                    // Printing the value
+                    echo "\n\n";
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'reset':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $branch_name                  = $argv[4];
+
+                    $branch_name_esa              = escapeshellarg( $branch_name );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // (Executing the commands)
+                    shell_exec("git fetch origin $branch_name_esa");
+                    shell_exec("git reset --hard origin/$branch_name_esa");
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'flat':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) && isset( $argv[5] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $branch_name                  = $argv[4];
+                    $tmp_branch_name              = $branch_name . '__flat';
+                    $commit_description           = $argv[5];
+
+                    $branch_name_esa              = escapeshellarg( $branch_name );
+                    $tmp_branch_name_esa          = escapeshellarg( $tmp_branch_name );
+                    $commit_description_esa       = escapeshellarg( $commit_description );
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // Printing the value
+                    echo "\n\n";
+
+
+
+                    // (Executing the commands)
+                    echo shell_exec("git checkout --orphan $tmp_branch_name_esa") . "\n\n\n";
+
+                    echo shell_exec('git add -A') . "\n\n\n";
+                    echo shell_exec("git commit -am $commit_description_esa") . "\n\n\n";
+
+                    echo shell_exec("git branch -D $branch_name_esa") . "\n\n\n";
+                    echo shell_exec("git branch -m $branch_name_esa") . "\n\n\n";
+
+                    echo shell_exec("git push -f origin $branch_name_esa");
+                    
+
+
+                    // Printing the value
+                    echo "\n\n";
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'status':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $local_repository_folder_path = $argv[3];
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    // Printing the value
+                    echo shell_exec('git status');
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'undo':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $local_repository_folder_path = $argv[3];
+                    $type                         = $argv[4];
+
+
+
+                    // (Setting the directory)
+                    chdir( $local_repository_folder_path );
+
+
+
+                    switch ( $type )
+                    {
+                        case 'local':
+                            // (Executing the command)
+                            shell_exec('git reset --soft HEAD~1');
+                        break;
+
+                        case 'synced':
+                            // (Executing the commands)
+                            shell_exec('git reset --soft HEAD~1');
+                            #shell_exec('git push origin -f');
+                            shell_exec('git push origin +HEAD');
+                        break;
+                    }
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'perms':
+        switch ( $argv[2] )
+        {
+            case 'normalize':
+                // (Getting the value)
+                $folder_path = __DIR__ . '/..';
+
+
+
+                // (Executing the commands)
+                echo shell_exec("chown -R \$USER:\$USER $folder_path");
+                echo shell_exec("chmod -R 755 $folder_path");
+            break;
+
+            case 'reset':
+                // (Setting the directory)
+                chdir( __DIR__ );
+
+
+
+                /*
+
+                // (Executing the commands)
+                echo shell_exec('find .. -type d -exec chmod 750 {} \;');
+                echo shell_exec('find .. -type f -exec chmod 640 {} \;');
+
+
+
+                // (Executing the commands)
+                echo shell_exec("usermod -a -G $http_user $cli_user");
+                echo shell_exec("chown -R $cli_user:$http_user ..");
+
+                echo shell_exec("chmod 2750 ..");
+
+                if ( is_dir( './logs' ) ) echo shell_exec("chmod 2770 ./logs");
+                if ( is_dir( './storage' ) ) echo shell_exec("chmod 2770 ./storage");
+                if ( is_dir( './views/_cache' ) ) echo shell_exec("chmod 2770 ./views/_cache");
+
+                */
+
+
+
+                // (Executing the commands)
+                echo shell_exec("usermod -a -G $http_user $cli_user");
+                echo shell_exec("chown -R $cli_user:$http_user ..");
+
+                echo shell_exec("chmod 2775 ..");
+
+                echo shell_exec('find .. -type d -exec chmod 775 {} \;');
+                echo shell_exec('find .. -type f -exec chmod 664 {} \;');
+            break;
+
+            case 'allow-http':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $folder_path_esa = escapeshellarg( $argv[3] );
+
+
+
+                    // (Executing the command)
+                    echo shell_exec("chmod 2755 $folder_path_esa");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'sys-service':
+        switch ( $argv[2] )
+        {
+            case 'config':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $name                  = $argv[3];
+
+                    $service_file_path     = "/etc/systemd/system/$name.service";
+
+                    $service_file_path_esa = escapeshellarg($service_file_path);
+
+
+
+                    // (Executing the command)
+                    system("nano $service_file_path_esa > `tty`");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'create':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) && isset( $argv[5] ) )
+                {// Values found
+                    // (Getting the values)
+                    $name                   = $argv[3];
+                    $description            = $argv[4];
+                    $executable_path        = $argv[5];
+
+                    $service_file_path      = "/etc/systemd/system/$name.service";
+
+
+
+                    if ( file_exists( $service_file_path ) )
+                    {// (File exists)
+                        // Printing the value
+                        die("\nCannot create the service :: Service '$name' already exists\n\n");
+                    }
+
+
+
+                    // (Getting the value)
+                    $template_file_content =
+                        <<<EOD
+                        [Unit]
+                        Description={! description !}
+                        After=network.target
+                        #Before=
+                        
+                        
+                        [Service]
+                        Type=simple
+                        #User=root
+                        
+                        Restart=always
+                        RestartSec=5
+                        
+                        ExecStart={! executable_path !}
+                        #ExecStop=
+                        #ExecReload=
+                        
+                        
+                        [Install]
+                        WantedBy=default.target
+                        RequiredBy=network.target                        
+                        EOD
+                    ;
+
+
+
+                    // (Getting the value)
+                    $kv_data =
+                    [
+                        'description'     => $description,
+                        'executable_path' => $executable_path
+                    ]
+                    ;
+
+                    foreach ($kv_data as $k => $v)
+                    {// Processing each entry
+                        // (Getting the value)
+                        $template_file_content = str_replace( "{! $k !}", $v, $template_file_content );
+                    }
+
+
+
+                    // (Writing the content to the file)
+                    file_put_contents( $service_file_path, $template_file_content );
+
+
+
+                    // (Executing the command)
+                    shell_exec('systemctl daemon-reload');
+
+
+
+                    // Printing the value
+                    echo "\nService '$name' has been created\n\n";
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'delete':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $name              = $argv[3];
+                    $service_file_path = "/etc/systemd/system/$name.service";
+
+
+
+                    // (Executing the command)
+                    shell_exec("service $name stop");
+
+
+
+                    // (Deleting the file)
+                    unlink( $service_file_path );
+
+
+
+                    // (Executing the command)
+                    shell_exec('systemctl daemon-reload');
+
+
+
+                    // Printing the value
+                    echo "\nService '$name' has been deleted\n\n";
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'rename':
+                if ( isset( $argv[3] ) && isset( $argv[4] ) )
+                {// Values found
+                    // (Getting the values)
+                    $old_name              = $argv[3];
+                    $new_name              = $argv[4];
+
+                    $old_service_file_path = "/etc/systemd/system/$old_name.service";
+                    $new_service_file_path = "/etc/systemd/system/$new_name.service";
+
+
+
+                    // (Executing the command)
+                    shell_exec("service $old_name stop");
+
+
+
+                    // (Renaming the file)
+                    rename( $old_service_file_path, $new_service_file_path );
+
+
+
+                    // (Executing the command)
+                    shell_exec('systemctl daemon-reload');
+
+
+
+                    // Printing the value
+                    echo "\nService '$old_name' has been renamed to '$new_name'\n\n";
+                }
+                else
+                {// Values not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'list':
+                // (Getting the value)
+                $service_list   = scandir( '/etc/systemd/system' );
+                $service_list   = array_filter( $service_list, function ($entry) { return $entry !== '.' && $entry !== '..' && pathinfo( $entry, PATHINFO_EXTENSION ) === 'service'; } );
+                $service_list   = array_map( function ($entry) { return pathinfo( $entry, PATHINFO_FILENAME ); }, $service_list );
+
+                $service_list_s = implode( "\n", $service_list );
+
+
+
+                // Printing the value
+                echo "\n$service_list_s\n\n";
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'apache':
+        switch ( $argv[2] )
+        {
+            case 'create':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $domain = $argv[3];
+
+
+
+                    // (Setting the value)
+                    $template_file_content =
+                        <<<EOD
+                        <VirtualHost *:80>
+                            ServerName {! domain !}
+                            ServerAlias {! domain !}
+                            ServerAdmin info@solenoid.it
+
+                            DocumentRoot /var/www/{! domain !}/core/web
+
+                            ErrorLog /var/www/{! domain !}/log/error.log
+                            CustomLog /var/www/{! domain !}/log/access.log combined
+
+                            RewriteEngine on
+                            RewriteCond %{SERVER_NAME} ={! domain !}
+                            RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+                        </VirtualHost>
+
+                        #<VirtualHost *:443>
+                        #    ServerName {! domain !}
+                        #    ServerAlias {! domain !}
+                        #    ServerAdmin info@solenoid.it
+                        #
+                        #    DocumentRoot /var/www/{! domain !}/core/web
+                        #
+                        #    ErrorLog /var/www/{! domain !}/log/error.log
+                        #    CustomLog /var/www/{! domain !}/log/access.log combined
+                        #
+                        #    SSLEngine on
+                        #
+                        #    Protocols h2 http/1.1
+                        #
+                        #
+                        #
+                        #    # LetsEncrypt
+                        #    Include /etc/letsencrypt/options-ssl-apache.conf
+                        #    SSLCertificateFile /etc/letsencrypt/live/{! domain !}/fullchain.pem
+                        #    SSLCertificateKeyFile /etc/letsencrypt/live/{! domain !}/privkey.pem
+                        #</VirtualHost>
+                        EOD
+                    ;
+
+
+
+                    // (Getting the value)
+                    $kv_data =
+                    [
+                        'domain' => $domain
+                    ]
+                    ;
+
+                    foreach ( $kv_data as $k => $v)
+                    {// Processing each entry
+                        // (Getting the value)
+                        $template_file_content = str_replace( "{! $k !}", $v, $template_file_content );
+                    }
+
+
+
+                    // (Getting the values)
+                    $domain_config_file_path     = "/etc/apache2/sites-available/$domain.conf";
+                    $domain_config_file_path_esa = escapeshellarg($domain_config_file_path);
+
+
+
+                    if ( file_exists( $domain_config_file_path ) )
+                    {// (File exists)
+                        // Printing the value
+                        die("\n\nCannot create the domain :: Domain '$domain' already exists !\n\n\n");
+                    }
+
+
+
+                    // (Writing the content to the file)
+                    file_put_contents( $domain_config_file_path, $template_file_content );
+
+
+
+                    // (Getting the value)
+                    $document_root_folder_path = "/var/www/$domain";
+
+                    if ( !is_dir( $document_root_folder_path ) )
+                    {// (Directory not found)
+                        // (Making the directory)
+                        mkdir( $document_root_folder_path, 0777, true );
+                    }
+
+
+
+                    // (Making the directories)
+                    mkdir( "$document_root_folder_path/cert", 0777, true );
+                    mkdir( "$document_root_folder_path/log", 0777, true );
+                    mkdir( "$document_root_folder_path/core", 0777, true );
+
+
+
+                    /*
+
+                    // (Getting the value)
+                    $document_root_folder_path_esa = escapeshellarg($document_root_folder_path );
+
+                    // (Executing the commands)
+                    echo shell_exec("chown -R $cli_user:$http_user $document_root_folder_path_esa");
+                    echo shell_exec("chmod 2775 $document_root_folder_path_esa");
+
+                    */
+
+
+
+                    // (Executing the command)
+                    system("nano $domain_config_file_path_esa > `tty`");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'config':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $domain                      = $argv[3];
+
+                    $domain_config_file_path     = "/etc/apache2/sites-available/$domain.conf";
+
+                    $domain_config_file_path_esa = escapeshellarg( $domain_config_file_path );
+
+
+
+                    // (Executing the command)
+                    system("nano $domain_config_file_path_esa > `tty`");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'publish':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $domain = $argv[3];
+
+
+
+                    // (Executing the commands)
+                    shell_exec("a2dissite $domain");
+                    shell_exec("a2ensite $domain");
+
+                    shell_exec('service apache2 restart');
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'revoke':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $domain = $argv[3];
+
+
+
+                    // (Executing the commands)
+                    shell_exec("a2dissite $domain");
+
+                    shell_exec('service apache2 restart');
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'delete':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the value)
+                    $domain = $argv[3];
+
+
+
+                    if ( file_exists( "/etc/apache2/sites-enabled/$domain.conf" ) )
+                    {// (File exists)
+                        // (Getting the value)
+                        $domain_esa = escapeshellarg( $domain );
+
+                        // (Executing the command)
+                        echo shell_exec("php x apache revoke $domain_esa");
+                    }
+
+
+
+                    // (Getting the value)
+                    $available_domain_conf_file_path = "/etc/apache2/sites-available/$domain.conf";
+
+                    if ( file_exists( $available_domain_conf_file_path ) )
+                    {// (File exists)
+                        // (Removing the file)
+                        unlink( $available_domain_conf_file_path );
+                    }
+
+
+
+                    // (Executing the command)
+                    echo shell_exec('service apache2 restart');
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'list':
+                // (Getting the value)
+                $domains = array_filter( scandir( '/etc/apache2/sites-available' ), function ($path) { return !in_array( $path, [ '.', '..' ] ); } );
+
+
+
+                // Printing the value
+                echo "\n\n";
+
+                foreach ($domains as $domain)
+                {// Processing each entry
+                    // (Getting the value)
+                    $state = file_exists( "/etc/apache2/sites-enabled/$domain" ) ? 'PUBLISHED' : 'IDLE';
+
+                    if ( isset( $argv[3] ) )
+                    {// Value found
+                        if ( $argv[3] !== $state )
+                        {// Match failed
+                            // Continuing the iteration
+                            continue;
+                        }
+                    }
+
+
+
+                    // Printing the value
+                    echo "$domain -> $state\n";
+                }
+
+                // Printing the value
+                echo "\n\n";
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    case 'cert':
+        switch ( $argv[2] )
+        {
+            case 'create':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $domain              = $argv[3];
+                    $domain_esa          = escapeshellarg( $domain );
+
+                    $cert_folder_path_esa = escapeshellarg( "/var/www/$domain/cert" );
+
+
+
+                    // (Getting the value)
+                    $email = isset( $argv[4] ) ? '--email ' . escapeshellarg( $argv[4] ) : '';
+
+
+
+                    // (Executing the command)
+                    echo shell_exec("certbot certonly -d $domain_esa $email --webroot --webroot-path $cert_folder_path_esa");
+                }
+                else
+                {// Value not found
+                    // (Executing the command)
+                    system("certbot --apache  > `tty`");
+                }
+            break;
+
+            case 'delete':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $domain     = $argv[3];
+                    $domain_esa = escapeshellarg( $domain );
+
+
+
+                    // (Executing the command)
+                    echo shell_exec("certbot -n delete --cert-name $domain_esa");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'revoke':
+                if ( isset( $argv[3] ) )
+                {// Value found
+                    // (Getting the values)
+                    $domain             = $argv[3];
+                    $domain_esa         = escapeshellarg( $domain );
+
+                    $cert_file_path_esa = escapeshellarg( "/etc/letsencrypt/live/$domain/cert.pem" );
+
+
+
+                    // (Executing the command)
+                    echo shell_exec("certbot -n revoke --cert-path $cert_file_path_esa");
+                }
+                else
+                {// Value not found
+                    // Printing the value
+                    echo $helper;
+                }
+            break;
+
+            case 'renew':
+                // (Executing the command)
+                echo shell_exec("certbot renew");
+            break;
+
+            case 'list':
+                // (Getting the value)
+                $domains = array_filter( scandir( '/etc/letsencrypt/live' ), function ($path) { return !in_array( $path, [ '.', '..', 'README' ] ); } );
+
+
+
+                // Printing the value
+                echo "\n\n";
+
+                foreach ($domains as $domain)
+                {// Processing each entry
+                    // Printing the value
+                    echo "$domain\n";
+                }
+
+                // Printing the value
+                echo "\n\n";
+            break;
+        }
+    break;
+
+
+
+    case 'svelte':
+        switch ( $argv[2] )
+        {
+            case 'install':
+                // (Setting the directory)
+                chdir( __DIR__ . '/svelte');
+
+
+
+                // (Executing the command)
+                echo shell_exec('rm -rf ./node_modules');
+                echo shell_exec("npm install");
+            break;
+
+            case 'build':
+                // (Including the file)
+                include_once( __DIR__ . '/autoload.php' );
+
+
+
+                // (Setting the directory)
+                chdir( __DIR__ . '/svelte');
+
+
+
+                // (Executing the command)
+                echo shell_exec("npm run build");
+
+
+
+                // (Getting the value)
+                $build_folder_path = __DIR__ . '/../web/build';
+
+                if ( !is_dir( $build_folder_path ) )
+                {// (Directory not found)
+                    // Printing the value
+                    die("\n\nUnable to build blade files :: Vite build is failed\n\n\n");
+                }
+
+
+
+                // (Getting the value)
+                $file_path_list = \Solenoid\System\Directory::select( $build_folder_path )->list( 0, '/\.html$/' );
+
+                foreach ($file_path_list as $file_path)
+                {// Processing each entry
+                    // (Getting the value)
+                    $file_content = file_get_contents( $file_path );
+
+
+
+                    // (Replacing the text)
+                    $file_content = preg_replace( '/\.\/_svelte/', '/build/_svelte', $file_content );
+
+
+
+                    // (Creating an HTMLBuilder)
+                    $html_builder = \Solenoid\HTML\Builder::create( $file_content );
+
+                    // (Appending the contents)
+                    $html_builder->append( 'head', "@include('assets/head.blade.php')" );
+                    $html_builder->append( 'body', "@include('assets/body.blade.php')" );
+
+                    // (Getting the value)
+                    $file_content = $html_builder->fetch_content();
+
+
+
+                    // (Getting the value)
+                    $blade_file_path = preg_replace( '/\.html$/', '.blade.php', $file_path );
+
+
+
+                    // (Writing the content to the file)
+                    \Solenoid\System\File::select( $blade_file_path )->write( $file_content );
+
+
+
+                    // (Removing the file)
+                    unlink( $file_path );
+                }
+            break;
+
+            case 'dev':
+                // (Setting the directory)
+                chdir( __DIR__ . '/svelte');
+
+
+
+                // (Executing the commands)
+                echo shell_exec('php ../x svelte build');
+                echo system("npm run dev");
+            break;
+        }
+    break;
+
+
+
+    case 'task':
+        // (Including the file)
+        include_once( __DIR__ . '/autoload.php' );
+
+
+
+        // (Setting the directory)
+        chdir( __DIR__ );
+
+
+
+        // (Getting the value)
+        $task_basedir = __DIR__ . '/tasks';
+
+
+
+        if ( $argv[2] === 'list' )
+        {// Match OK
+            // Printing the value
+            echo "\n\n";
+
+
+
+            // (Getting the value)
+            $tasks = \Solenoid\Tasker\Task::list( $task_basedir );
+
+            foreach ($tasks as $task)
+            {// Processing each entry
+                // (Getting the values)
+                $task_id      = $task['id'];
+                $task_state   = $task['state'];
+                $task_scripts = implode( "\n\t", $task['scripts'] );
+
+
+
+                // Printing the value
+                echo
+                    <<<EOD
+                    $task_id -> $task_state
+                    [
+                    \t$task_scripts
+                    ]
+
+
+                    EOD
+                ;
+            }
+
+
+
+            // Printing the value
+            echo "\n";
+        }
+        else
+        {// Match failed
+            // (Getting the value)
+            $task_id = $argv[2];
+
+            switch ( $argv[3] )
+            {
+                case 'info':
+                    // (Getting the value)
+                    $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                    if ( $task->exists() )
+                    {// (Task found)
+                        // Printing the value
+                        echo "\n\n$task\n\n\n";
+                    }
+                    else
+                    {// (Task not found)
+                        // Printing the value
+                        echo "\n\nTask `$task_id` does not exist !\n\n\n";
+                    }
+                break;
+
+                case 'enable':
+                    // (Getting the value)
+                    $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                    if ( $task->exists() )
+                    {// (Task found)
+                        // (Setting the task state)
+                        $task->set_state( true );
+
+
+
+                        // Printing the value
+                        echo "\n\n$task\n\n\n";
+                    }
+                    else
+                    {// (Task not found)
+                        // Printing the value
+                        echo "\n\nTask `$task_id` does not exist !\n\n\n";
+                    }
+                break;
+
+                case 'disable':
+                    // (Getting the value)
+                    $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                    if ( $task->exists() )
+                    {// (Task found)
+                        // (Setting the task state)
+                        $task->set_state( false );
+
+
+
+                        // Printing the value
+                        echo "\n\n$task\n\n\n";
+                    }
+                    else
+                    {// (Task not found)
+                        // Printing the value
+                        echo "\n\nTask `$task_id` does not exist !\n\n\n";
+                    }
+                break;
+
+                case 'create':
+                    // (Setting the value)
+                    $script_id = 'main';
+
+
+
+                    // (Getting the value)
+                    $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                    if ( $task->exists() )
+                    {// (Task found)
+                        // Printing the value
+                        echo "\n\nTask `$task_id` already exists !\n\n\n";
+                    }
+                    else
+                    {// (Task not found)
+                        // (Creating the task)
+                        $task->create();
+
+                        // (Adding a script)
+                        $task->add_script( $script_id );
+
+
+
+                        // Printing the value
+                        echo "\n\nTask `$task_id` has been created !\n\nScript `$script_id` has been created -> `$task_basedir/$task_id/scripts/$script_id/script.php`\n\n\n";
+                    }
+                break;
+
+                case 'add':
+                    if ( isset( $argv[4] ) )
+                    {// Value found
+                        // (Getting the value)
+                        $script_id = $argv[4];
+
+
+
+                        // (Getting the value)
+                        $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                        if ( !$task->exists() )
+                        {// (Task not found)
+                            // (Creating the task)
+                            $task->create();
+                        }
+
+
+
+                        if ( $task->script_exists( $script_id ) )
+                        {// (Script found)
+                            // Printing the value
+                            echo "\n\nScript `$script_id` of task `$task_id` already exists !\n\n\n";
+                        }
+                        else
+                        {// (Script not found)
+                            // (Adding the script)
+                            $task->add_script( $script_id );
+
+
+
+                            // Printing the value
+                            echo "\n\n$task\n\n\n";
+                        }
+                    }
+                    else
+                    {// Value not found
+                        // Printing the value
+                        echo $helper;
+                    }
+                break;
+
+                case 'run':
+                    if ( isset( $argv[4] ) )
+                    {// Value found
+                        // (Getting the values)
+                        $script_id        = $argv[4];
+                        $script_file_path = "$task_basedir/$task_id/scripts/$script_id/script.php";
+                        $script_args      = implode( ' ', array_map( function ($arg) { return escapeshellarg( $arg ); }, array_splice( $argv, 5 ) ) );
+
+
+
+                        // (Getting the value)
+                        $task = \Solenoid\Tasker\Task::select( $task_basedir, $task_id );
+
+                        if ( $task->exists() )
+                        {// (Task found)
+                            if ( $task->script_exists( $script_id ) )
+                            {// (Script found)
+                                // (Getting the value)
+                                $script_file_path = escapeshellarg( $script_file_path );
+    
+                                // Printing the value
+                                echo shell_exec( "/usr/bin/php $script_file_path $script_args" );
+                            }
+                            else
+                            {// (Script not found)
+                                // Printing the value
+                                echo "\n\nScript `$script_id` of task `$task_id` does not exist !\n\n\n";
+                            }
+                        }
+                        else
+                        {// (Task not found)
+                            // Printing the value
+                            echo "\n\nTask `$task_id` does not exist !\n\n\n";
+                        }
+                    }
+                    else
+                    {// Value not found
+                        // Printing the value
+                        echo $helper;
+                    }
+                break;
+
+                default:
+                    // Printing the value
+                    echo $helper;
+            }
+        }
+    break;
+
+
+
+    case 'cron':
+        switch ( $argv[2] )
+        {
+            case 'config':
+                // (Executing the command)
+                system("crontab -e >> `tty`");
+            break;
+
+            case 'add':
+                switch ( $argv[3] )
+                {
+                    case 'task':
+                        if ( isset( $argv[4] ) && isset( $argv[5] ) )
+                        {// Values found
+                            // (Getting the values)
+                            $task_id          = $argv[4];
+                            $script_id        = $argv[5];
+                            $script_args      = implode( ' ', array_map( function ($arg) { return escapeshellarg( $arg ); }, array_splice( $argv, 6 ) ) );
+
+
+
+                            // (Getting the value)
+                            $task_folder_path = __DIR__ . "/tasks/$task_id";
+
+                            if ( !is_dir( $task_folder_path ) )
+                            {// (Task not found)
+                                // Printing the value
+                                echo "\n\nCannot add the task to the cron :: Task '$task_id' does not exist !\n\n\n";
+
+                                // Closing the process
+                                exit;
+                            }
+
+
+
+                            // (Getting the value)
+                            $script_file_path = "$task_folder_path/scripts/$script_id/script.php";
+
+                            if ( !file_exists( $script_file_path ) )
+                            {// (Script not found)
+                                // Printing the value
+                                echo "\n\nCannot add the task to the cron :: Script '$script_id' of the task '$task_id' does not exist !\n\n\n";
+
+                                // Closing the process
+                                exit;
+                            }
+
+
+
+                            // (Getting the values)
+                            $script_file_path = escapeshellarg( $script_file_path );
+                            $executable_path  = "/usr/bin/php $script_file_path $script_args";
+
+
+
+                            // (Executing the commands)
+                            system("(crontab -l; echo '\n\n\n# Task '$task_id'::'$script_id'\n0 00 * * * $executable_path') | crontab -");
+                            system("crontab -e >> `tty`");
+                        }
+                        else
+                        {// Values not found
+                            // Printing the value
+                            echo $helper;
+                        }
+                    break;
+
+                    default:
+                        // Printing the value
+                        echo $helper;
+                }
+            break;
+
+            default:
+                // Printing the value
+                echo $helper;
+        }
+    break;
+
+
+
+    default:
+        // Printing the value
+        echo $helper;
+}
+
+
+
+?>

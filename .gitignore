@@ -1,0 +1,9 @@
+composer.lock
+
+/private/lib/composer
+/private/logs/*
+/private/views/_cache/*
+/private/storage/*
+
+/web/build
+/web/cdn/zip/*

@@ -1,0 +1,38 @@
+{
+    "name": "solenoid/core",
+    "description": "HTTP MVC Framework",
+    "type": "project",
+    "keywords": ["http","core","mvc"],
+    "homepage": "https://github.com/Solenoid-IT/php-core",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pier Niccolò Giannelli",
+            "email": "pierniccologiannelli@gmail.com",
+            "homepage": "https://www.solenoid.it",
+            "role": "Full Stack Web Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0",
+        "solenoid/core-lib": "^1.0.0",
+        "solenoid/cdn": "^1.0.0",
+        "solenoid/collection": "^1.0.0",
+        "solenoid/csv": "^1.0.0",
+        "solenoid/datetime": "^1.0.0",
+        "solenoid/debug": "^1.0.0",
+        "solenoid/keygen": "^1.0.0",
+        "solenoid/mysql": "^1.0.0",
+        "solenoid/network": "^1.0.0",
+        "solenoid/rpc": "^1.0.0",
+        "solenoid/smtp": "^1.0.0",
+        "solenoid/sse": "^1.0.0",
+        "solenoid/text": "^1.0.0",
+        "solenoid/vector": "^1.0.0",
+        "solenoid/xml": "^1.0.0",
+        "solenoid/zip": "^1.0.0"
+    },
+    "config": {
+        "vendor-dir": "private/lib/composer"
+    }
+}
