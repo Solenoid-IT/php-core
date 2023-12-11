@@ -2,8 +2,15 @@
 
 
 
-$http_user = 'www-data';
-$cli_user  = get_current_user();
+$http_user  = 'www-data';
+$cli_user   = get_current_user();
+
+$core_group = $http_user;
+
+$basedir    = __DIR__;
+
+
+
 
 
 
@@ -51,8 +58,7 @@ $helper =
     x git status <local-repository-folder-path>
     x git undo <local-repository-folder-path> <type=local|synced>
 
-    x perms reset
-    x perms allow-http <folder-path>
+    x perms set
 
     x sys-service config <name>
     x sys-service create <name> <description> <executable-path>
@@ -390,6 +396,31 @@ switch ( $argv[1] )
         {// (Directory not found)
             // (Executing the command)
             echo shell_exec("php x git clone 'https://github.com/StartBootstrap/startbootstrap-sb-admin.git' $tpl_folder_path_rel");
+        }
+
+
+
+        // (Executing the command)
+        echo shell_exec("sudo php x perms set");
+
+
+
+        // (Setting the value)
+        $folder_paths =
+        [
+            $basedir . '/logs',
+            $basedir . '/storage',
+            $basedir . '/views/_cache'
+        ]
+        ;
+
+        foreach ($folder_paths as $folder_path)
+        {// Processing each entry
+            if ( !is_dir( $folder_path ) )
+            {// (Directory not found)
+                // (Making the directory)
+                mkdir( $folder_path );
+            }
         }
     break;
 
@@ -1266,18 +1297,24 @@ switch ( $argv[1] )
     case 'perms':
         switch ( $argv[2] )
         {
-            case 'normalize':
-                // (Getting the value)
-                $folder_path = __DIR__ . '/..';
+            case 'set':
+                // (Executing the commands)
+                echo shell_exec("sudo groupadd $core_group");
+
+                echo shell_exec("sudo adduser $cli_user $core_group");
+                echo shell_exec("sudo adduser $http_user $core_group");
 
 
 
                 // (Executing the commands)
-                echo shell_exec("chown -R \$USER:\$USER $folder_path");
-                echo shell_exec("chmod -R 755 $folder_path");
+                echo shell_exec("chown -R $cli_user:$core_group $basedir/..");
+                echo shell_exec("chmod 2775 $basedir/..");
+                echo shell_exec("find $basedir/.. -type d -exec chmod 2775 {} \;");
             break;
 
-            case 'reset':
+
+
+            case 'reset_UNUSED':
                 // (Setting the directory)
                 chdir( __DIR__ );
 
@@ -1315,7 +1352,18 @@ switch ( $argv[1] )
                 echo shell_exec('find .. -type f -exec chmod 664 {} \;');
             break;
 
-            case 'allow-http':
+            case 'normalize_UNUSED':
+                // (Getting the value)
+                $folder_path = __DIR__ . '/..';
+
+
+
+                // (Executing the commands)
+                echo shell_exec("chown -R \$USER:\$USER $folder_path");
+                echo shell_exec("chmod -R 775 $folder_path");
+            break;
+
+            case 'allow-http_UNUSED':
                 if ( isset( $argv[3] ) )
                 {// Value found
                     // (Getting the value)
@@ -1324,7 +1372,7 @@ switch ( $argv[1] )
 
 
                     // (Executing the command)
-                    echo shell_exec("chmod 2755 $folder_path_esa");
+                    echo shell_exec("chmod 2775 $folder_path_esa");
                 }
                 else
                 {// Value not found
@@ -1651,16 +1699,12 @@ switch ( $argv[1] )
 
 
 
-                    /*
-
                     // (Getting the value)
-                    $document_root_folder_path_esa = escapeshellarg($document_root_folder_path );
+                    $document_root_folder_path_esa = escapeshellarg( $document_root_folder_path );
 
                     // (Executing the commands)
                     echo shell_exec("chown -R $cli_user:$http_user $document_root_folder_path_esa");
                     echo shell_exec("chmod 2775 $document_root_folder_path_esa");
-
-                    */
 
 
 
