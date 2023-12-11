@@ -27,7 +27,7 @@ class MySQL extends Store
         // (Getting the value)
         self::$data =
         [
-            'demo' => Connection::create( 'localhost', null, 'core_demo', 'p1a2s3s4w5o6r7d8', null, null, 'utf8' )
+            'demo' => Connection::create( 'localhost', null, 'core_demo', 'p1a2s3s4w5o6r7d8' )
         ]
         ;
 
