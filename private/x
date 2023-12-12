@@ -133,7 +133,19 @@ $script_file_contents =
         <<<END
         @extends('layouts/empty.blade.php')
 
-        @section('view.content')
+
+
+        @section('view.head')
+
+        <title>
+            Dashboard
+        </title>
+
+        @endsection
+
+
+
+        @section('view.body')
 
             <style>
 
