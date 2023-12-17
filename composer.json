@@ -25,6 +25,7 @@
         "solenoid/mysql": "^1.0.0",
         "solenoid/network": "^1.0.0",
         "solenoid/rpc": "^1.0.0",
+        "solenoid/bin": "^1.0.0",
         "solenoid/smtp": "^1.0.0",
         "solenoid/sse": "^1.0.0",
         "solenoid/text": "^1.0.0",

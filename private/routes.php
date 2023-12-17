@@ -14,6 +14,7 @@ use \App\Controller\Logout;
 use \App\Controller\Test;
 use \App\Controller\Svelte;
 use \App\Controller\SSE;
+use \App\Controller\BIN;
 use \App\Controller\Perf;
 
 
@@ -54,6 +55,13 @@ $_CORE['routes'] =
         'GET'     => Destination::create( SSE::class, 'get' )->set_middlewares( ['authentication'] ),
         'OPTIONS' => Destination::create( SSE::class, 'options' )->set_middlewares( ['authentication'] ),
         'SSE'     => Destination::create( SSE::class, 'sse' )->set_middlewares( ['authentication'] )
+    ]
+    ,
+    '/bin'  =>
+    [
+        'GET'     => Destination::create( BIN::class, 'get' )->set_middlewares( ['authentication'] ),
+        'OPTIONS' => Destination::create( BIN::class, 'options' )->set_middlewares( ['authentication'] ),
+        'BIN'     => Destination::create( BIN::class, 'bin' )->set_middlewares( ['authentication'] )
     ]
     ,
     '/perf' =>

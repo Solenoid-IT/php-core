@@ -39,16 +39,19 @@ class Authentication extends Middleware
             return false;
         }
 
-        if ( !$session->regenerate_id() )
-        {// (Unable to regenerate the session id)
-            // (Setting the value)
-            $message = "Unable to regenerate the session id";
+        if ( parent::$core::$request::$method !== 'BIN' )
+        {// (There is not a transfer in progress)
+            if ( !$session->regenerate_id() )
+            {// (Unable to regenerate the session id)
+                // (Setting the value)
+                $message = "Unable to regenerate the session id";
 
-            // Throwing an exception
-            throw new \Exception($message);
+                // Throwing an exception
+                throw new \Exception($message);
 
-            // Returning the value
-            return false;
+                // Returning the value
+                return false;
+            }
         }
 
 

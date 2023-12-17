@@ -33,6 +33,14 @@ use \Solenoid\Core\Core;
                     </a>
                 @endif
 
+                <a class="nav-link" href="/bin">
+                    <div class="sb-nav-link-icon">
+                        <i class="fa-solid fa-upload"></i>
+                    </div>
+
+                    BIN
+                </a>
+
                 {{--
                 
                 <div class="sb-sidenav-menu-heading">Interface</div>
